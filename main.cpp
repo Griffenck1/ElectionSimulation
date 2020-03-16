@@ -1,11 +1,10 @@
-#include "Election.h"
+#include "Election.hpp"
 
 int main(){
-	Election e1;
-	std::vector<Candidate> temp;
-	temp = e1.get_candidates();
-	for(Candidate c : temp){
-		std::cout << c.name << " " << c.id << std::endl;
-	}
+	//Set random number seed
+	srand(time(NULL));
+	std::vector<Candidate> candidates = {Candidate("Bob", Party::Party1, 0), Candidate("Jill", Party::Party2, 1)};
+	std::cout << *ElectoralMap::Instance(candidates) << std::endl;
+	PrintVote("Full Results", ElectoralMap::Instance(candidates)->CollectVotes());
 	return 0;
 }
