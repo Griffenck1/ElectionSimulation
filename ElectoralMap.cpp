@@ -31,7 +31,7 @@ std::map<std::string, int> ElectoralMap::CollectVotes(){
 		std::map<std::string, int> district_vote = d.ConductVote(candidates_);
 		for(std::pair<std::string, int> pair : district_vote){
 			total_vote[pair.first] += pair.second;
-		}
+		};
 	}
 	return total_vote;
 }

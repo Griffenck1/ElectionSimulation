@@ -16,6 +16,8 @@ Party string_to_party(std::string s);
 
 std::string party_to_string(Party p);
 
+std::vector<Party> GetParties(); 
+
 //Helper fucntion helps to print votes from map format
 void PrintVote(std::string vote_name, std::map<std::string, int> vote);
 

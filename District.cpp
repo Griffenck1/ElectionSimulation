@@ -34,6 +34,10 @@ std::string party_to_string(Party p){
 	}
 }
 
+std::vector<Party> GetParties(){
+	return {Party::Party1, Party::Party2, Party::None};
+}
+
 District::District(int id){
 	id_ = id;
 	//Sets area equalt to a random int between 5 and 29
@@ -75,7 +79,12 @@ std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidat
 		while(count < pair.second){
 			//this handles Party::None and Parties with no candidates
 			if(party_members.at(pair.first).size() == 0){
-				vote_count[party_members.at(this->MajorityParty())[rand() % party_members.at(this->MajorityParty()).size()].name] += 1;
+				if(party_members[this->MajorityParty()].size() != 0){
+					vote_count[party_members.at(this->MajorityParty())[rand() % party_members.at(this->MajorityParty()).size()].name] += 1;
+				}
+				else{
+					vote_count[candidates[rand() % candidates.size()].name] += 1;
+				}
 			}
 			else{
 				vote_count[party_members.at(pair.first)[rand() % party_members.at(pair.first).size()].name] += 1;
@@ -83,6 +92,7 @@ std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidat
 			count++;
 		}
 	}
+	std::cout << "" << std::endl;
 	
 	return vote_count;
 }
