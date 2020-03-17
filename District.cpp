@@ -53,7 +53,7 @@ District::District(int id){
 }
 
 Party District::MajorityParty(){
-	int majority_count = 0;
+	int majority_count = -1;
 	Party majority;
 	for(std::pair<Party, int> p : voters_){
 		if((p.second > majority_count) & (p.first != Party::None)){
@@ -62,6 +62,25 @@ Party District::MajorityParty(){
 		}
 	}
 	return majority;
+}
+
+Party District::MajorityParty(Party not_this_party){
+	int majority_count = -1;
+	Party majority;
+	for(std::pair<Party, int> p : voters_){
+		if((p.second > majority_count) & (p.first != Party::None) & (p.first != not_this_party)){
+			majority = p.first;
+			majority_count = p.second;
+		}
+	}
+	return majority;
+}
+
+void District::ConvertConstituent(Party old_party, Party new_party){
+	if(voters_[old_party] > 0){
+		voters_[old_party] -= 1;
+		voters_[new_party] += 1;
+	}
 }
 
 std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidates){
@@ -98,7 +117,7 @@ std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidat
 }
 
 int District::CalculateTotalConstituents(){
-	int pop;
+	int pop = 0;
 	for(std::pair<Party, int> pair : voters_){
 		pop += pair.second;
 	}
@@ -110,8 +129,10 @@ std::ostream& operator<<(std::ostream& os, const District &d){
 	os << "square miles: " << d.area_ << std::endl;
 	
 	for(std::pair<Party, int> pair : d.voters_){
-		os << party_to_string(pair.first) << ": " << pair.second << "    " << std::endl;
+		os << party_to_string(pair.first) << ": " << pair.second << std::endl;
 	}
+	
+	os << std::endl;
 	
 	return os;
 }

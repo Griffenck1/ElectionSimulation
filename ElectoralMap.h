@@ -7,6 +7,8 @@ class ElectoralMap{
 	public:
 		static ElectoralMap* Instance(std::vector<Candidate> candidates);
 	
+		void ReleaseInstance();
+	
 		friend std::ostream& operator<<(std::ostream& os, const ElectoralMap &e);
 		
 		//returns the total # of constituants
@@ -20,6 +22,8 @@ class ElectoralMap{
 	
 		//collects votes from all districts for representational elections
 		std::map<std::string, int> CollectVotesRepresentational();
+	
+		void Campaign(Candidate c, unsigned int district_id);
 	private:
 		ElectoralMap(std::vector<Candidate> candidates);
 		std::vector<District> districts_;

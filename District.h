@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -45,6 +46,7 @@ class District{
 	
 		int get_id(){return id_;};
 		int get_area(){return area_;};
+	
 		std::map<Party, int> get_voters(){return voters_;};
 	
 		int CalculateTotalConstituents();
@@ -52,6 +54,10 @@ class District{
 		friend std::ostream& operator<<(std::ostream& os, const District &d);
 		
 		Party MajorityParty();
+	
+		Party MajorityParty(Party not_this_party);
+	
+		void ConvertConstituent(Party old_party, Party new_party);
 	
 		std::map<std::string, int> ConductVote(std::vector<Candidate>);
 	
