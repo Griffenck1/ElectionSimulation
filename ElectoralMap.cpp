@@ -3,17 +3,40 @@
 //Helps ensure that only one instance of class can exist at a time
 ElectoralMap* ElectoralMap::instance_ = NULL;
 
+/**
+Constructs an electoral map
+*/
+ElectoralMap::ElectoralMap(std::vector<Candidate> candidates){
+	candidates_ = candidates;
+	
+	int count = 0;
+	while(count < 3){
+		districts_.push_back(District(count + 1));
+		count++;
+	}
+}
+
+/**
+Returns a poitner to the instance of ElectoralMap
+*/
 ElectoralMap* ElectoralMap::Instance(std::vector<Candidate> candidates){
+	//if there is no instance, make one
 	if(!instance_){
 		instance_ = new ElectoralMap(candidates);
 	}
 	return instance_;
 }
 
+/**
+Sets the instance to NULL, thus deleting it
+*/
 void ElectoralMap::ReleaseInstance(){
 	ElectoralMap::instance_ = NULL;
 }
 
+/**
+Calculates the total number of constituents in the ElectoralMap from all districts
+*/
 int ElectoralMap::CalculateTotalConstituents(){
 	int total = 0;
 	for(District d : districts_){
@@ -22,6 +45,9 @@ int ElectoralMap::CalculateTotalConstituents(){
 	return total;
 }
 
+/**
+Assigns every district a representational vote based on total population
+*/
 void ElectoralMap::PopulateDistrictVotes(){
 	int total_votes = districts_.size() * 5;
 	for(District d : districts_){
@@ -32,56 +58,10 @@ void ElectoralMap::PopulateDistrictVotes(){
 	}
 }
 
-std::map<std::string, int> ElectoralMap::CollectVotes(){
-	std::map<std::string, int> total_vote;
-	for(Candidate c : candidates_){
-		total_vote.insert(std::pair<std::string, int>(c.name, 0));
-	}
-	for(District d : districts_){
-		std::map<std::string, int> district_vote = d.ConductVote(candidates_);
-		std::cout << "District " << d.get_id() << ": " << std::endl;
-		for(std::pair<std::string, int> pair : district_vote){
-			total_vote[pair.first] += pair.second;
-			std::cout << pair.first << ": " << pair.second << std::endl;
-		};
-	}
-	return total_vote;
-}
-
-std::map<std::string, int> ElectoralMap::CollectVotesRepresentational(){
-	this->PopulateDistrictVotes();
-	
-	std::map<std::string, int> total_vote;
-	for(Candidate c : candidates_){
-		total_vote.insert(std::pair<std::string, int>(c.name, 0));
-	}
-	for(District d : districts_){
-		std::map<std::string, int> district_vote = d.ConductVote(candidates_);
-		std::string winner;
-		int winner_votes = 0;
-		for(std::pair<std::string, int> pair : district_vote){
-			if(pair.second > winner_votes){
-				winner = pair.first;
-				winner_votes = pair.second;
-			}
-		}
-		total_vote[winner] += district_votes_[d.get_id() - 1];
-		std::cout << "District " << d.get_id() << ": " << std::endl;
-		std::cout << winner << ": " << district_votes_[d.get_id() - 1] << std::endl;
-	}
-	return total_vote;
-}
-
-ElectoralMap::ElectoralMap(std::vector<Candidate> candidates){
-	candidates_ = candidates;
-	
-	int count = 0;
-	while(count < 2){
-		districts_.push_back(District(count + 1));
-		count++;
-	}
-}
-
+/**
+Allows a candidate to campaign in a district, handles the logic of whether the 
+candidate has failed or succeeded.
+*/
 void ElectoralMap::Campaign(Candidate c, unsigned int district_id){
 	if((district_id) <= districts_.size()){
 		std::map<Party, int> district_voters = districts_[district_id - 1].get_voters();
@@ -112,9 +92,12 @@ void ElectoralMap::Campaign(Candidate c, unsigned int district_id){
 	
 		if(random <= chance_success){
 			districts_[district_id - 1].ConvertConstituent(Party::None, c.party);
+			std::cout << "Congrats, you have converted someone from None to " << party_to_string(c.party) << std::endl << std::endl;
 		}
 		if(random <= chance_extra_success){
 			districts_[district_id - 1].ConvertConstituent(districts_[district_id - 1].MajorityParty(c.party), c.party);
+			std::cout << "Congrats, you have converted someone from " << party_to_string(districts_[district_id - 1].MajorityParty(c.party));
+			 std::cout << " to " << party_to_string(c.party) << std::endl << std::endl;
 		}
 	}
 	else{
@@ -123,6 +106,58 @@ void ElectoralMap::Campaign(Candidate c, unsigned int district_id){
 	
 }
 
+/**
+Collects votes from each district for a direct election, adds them together,
+and returns the total vote as map from string (candidate name) to int (candidate votes)
+*/
+std::map<std::string, int> ElectoralMap::CollectVotes(){
+	std::map<std::string, int> total_vote;
+	for(Candidate c : candidates_){
+		total_vote.insert(std::pair<std::string, int>(c.name, 0));
+	}
+	for(District d : districts_){
+		std::map<std::string, int> district_vote = d.ConductVote(candidates_);
+		std::cout << "District " << d.get_id() << ": " << std::endl;
+		for(std::pair<std::string, int> pair : district_vote){
+			total_vote[pair.first] += pair.second;
+			std::cout << pair.first << ": " << pair.second << std::endl;
+		};
+	}
+	return total_vote;
+}
+
+/**
+Collects votes from each district for a Representational election, adds them together,
+and returns the total vote as map from string (candidate name) to int (candidate votes)
+*/
+std::map<std::string, int> ElectoralMap::CollectVotesRepresentational(){
+	//populate district votes only if the election is representational
+	this->PopulateDistrictVotes();
+	
+	std::map<std::string, int> total_vote;
+	for(Candidate c : candidates_){
+		total_vote.insert(std::pair<std::string, int>(c.name, 0));
+	}
+	for(District d : districts_){
+		std::map<std::string, int> district_vote = d.ConductVote(candidates_);
+		std::string winner;
+		int winner_votes = 0;
+		for(std::pair<std::string, int> pair : district_vote){
+			if(pair.second > winner_votes){
+				winner = pair.first;
+				winner_votes = pair.second;
+			}
+		}
+		total_vote[winner] += district_votes_[d.get_id() - 1];
+		std::cout << "District " << d.get_id() << ": " << std::endl;
+		std::cout << winner << ": " << district_votes_[d.get_id() - 1] << std::endl;
+	}
+	return total_vote;
+}
+
+/**
+Overload << to make printing electoral maps easier
+*/
 std::ostream& operator<<(std::ostream& os, const ElectoralMap &e){
 	for(District d : e.districts_){
 		os << d;

@@ -1,11 +1,28 @@
 #include "District.h"
 
+/**
+Helps make printing votes easier
+*/
 void PrintVote(std::string vote_name, std::map<std::string, int> vote){
+	std::cout << std::endl;
 	std::cout << vote_name << ":" << std::endl;
 	for(std::pair<std::string, int> p : vote){
 		std::cout << p.first << ": " << p.second << std::endl;
 	}
 	std::cout << std::endl;
+	//prints a winner if this is the full results
+	if(vote_name == "Full Results"){
+		//Calculate the winner of the vote
+		std::string winner = "NULL";
+		int winner_votes = 0;
+		for(std::pair<std::string, int> p : vote){
+			if(p.second > winner_votes){
+				winner = p.first;
+				winner_votes = p.second;
+			}
+		}
+		std::cout << "Congragulations, " << winner << " you've won!" << std::endl << std::endl; 
+	}
 }
 
 //converts strings to Party
@@ -34,17 +51,23 @@ std::string party_to_string(Party p){
 	}
 }
 
+/**
+Returns a vector of all parties in the enum class
+*/
 std::vector<Party> GetParties(){
 	return {Party::Party1, Party::Party2, Party::None};
 }
 
+/**
+Takes an integer as an argument and constructs a District
+*/
 District::District(int id){
 	id_ = id;
 	//Sets area equalt to a random int between 5 and 29
 	area_ = rand() % (30 - 5) + 5;
 	
-	//Creeates a vector of all parties
-	std::vector<Party> parties {Party::Party1, Party::Party2, Party::None};
+	//Creates a vector of all parties
+	std::vector<Party> parties = GetParties();
 	
 	//Uses the vector of parties in order to start each party with between 0-9 constituents in the district
 	for(Party p : parties){
@@ -52,6 +75,21 @@ District::District(int id){
 	}
 }
 
+/**
+Calculates and returns the total # of constituents in a district
+*/
+int District::CalculateTotalConstituents(){
+	int pop = 0;
+	for(std::pair<Party, int> pair : voters_){
+		pop += pair.second;
+	}
+	return pop;
+}
+
+/**
+Calcualtes which party has the most voters in a district and returns that 
+Party
+*/
 Party District::MajorityParty(){
 	int majority_count = -1;
 	Party majority;
@@ -64,6 +102,10 @@ Party District::MajorityParty(){
 	return majority;
 }
 
+/**
+Returns the majority party in the district ignoring the party that is passed 
+as a parameter
+*/
 Party District::MajorityParty(Party not_this_party){
 	int majority_count = -1;
 	Party majority;
@@ -76,6 +118,9 @@ Party District::MajorityParty(Party not_this_party){
 	return majority;
 }
 
+/**
+Converts one contituent from their old party to their new partu
+*/
 void District::ConvertConstituent(Party old_party, Party new_party){
 	if(voters_[old_party] > 0){
 		voters_[old_party] -= 1;
@@ -83,6 +128,10 @@ void District::ConvertConstituent(Party old_party, Party new_party){
 	}
 }
 
+/**
+Handles conducting votes in a district, then returns the vote as a map from
+string (holds candidate's name) to int (holds how many votes were cast for them)
+*/
 std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidates){
 	//Initialized map from candidates to how many votes they have won
 	std::map<std::string, int> vote_count;
@@ -95,17 +144,22 @@ std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidat
 	
 	for(std::pair<Party, int> pair : voters_){
 		int count = 0;
+		//for all voters in party
 		while(count < pair.second){
 			//this handles Party::None and Parties with no candidates
 			if(party_members.at(pair.first).size() == 0){
+				//If there is a majority party with constituents
 				if(party_members[this->MajorityParty()].size() != 0){
+					//Vote for a random member of the majority party
 					vote_count[party_members.at(this->MajorityParty())[rand() % party_members.at(this->MajorityParty()).size()].name] += 1;
 				}
 				else{
+					//If all parties except None have no candidates, vote for a random candidate
 					vote_count[candidates[rand() % candidates.size()].name] += 1;
 				}
 			}
 			else{
+				//Cosntituents with a party other than None and candidates will vote for a random candiddate in their party
 				vote_count[party_members.at(pair.first)[rand() % party_members.at(pair.first).size()].name] += 1;
 			}
 			count++;
@@ -116,14 +170,9 @@ std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidat
 	return vote_count;
 }
 
-int District::CalculateTotalConstituents(){
-	int pop = 0;
-	for(std::pair<Party, int> pair : voters_){
-		pop += pair.second;
-	}
-	return pop;
-}
-
+/**
+Overloads << so that printing districts is easier
+*/
 std::ostream& operator<<(std::ostream& os, const District &d){
 	os << "District " << d.id_ << ":" << std::endl;
 	os << "square miles: " << d.area_ << std::endl;

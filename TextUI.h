@@ -9,13 +9,11 @@ class TextUI{
 	
 	void RouteChoice(std::string);
 	
+	private:
 	void DirectElection();
-	
 	void RepresentationalElection();
 	
 	std::vector<Candidate> GetCandidatesToRegister();
-	
-	private:
 };
 
 #endif  // TEXTUI_H

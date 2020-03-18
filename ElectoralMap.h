@@ -8,22 +8,18 @@ class ElectoralMap{
 		static ElectoralMap* Instance(std::vector<Candidate> candidates);
 	
 		void ReleaseInstance();
-	
-		friend std::ostream& operator<<(std::ostream& os, const ElectoralMap &e);
 		
-		//returns the total # of constituants
 		int CalculateTotalConstituents();
 		
-		//calcualtes how many votes a district has in a representational election and populates district_votes_
 		void PopulateDistrictVotes();
 	
-		//collects votes from all districts
+		void Campaign(Candidate c, unsigned int district_id);
+	
 		std::map<std::string, int> CollectVotes();
 	
-		//collects votes from all districts for representational elections
 		std::map<std::string, int> CollectVotesRepresentational();
 	
-		void Campaign(Candidate c, unsigned int district_id);
+		friend std::ostream& operator<<(std::ostream& os, const ElectoralMap &e);
 	private:
 		ElectoralMap(std::vector<Candidate> candidates);
 		std::vector<District> districts_;

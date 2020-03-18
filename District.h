@@ -4,11 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string>
+#include <math.h> 
+#include <stdio.h> //Random # generation
+#include <stdlib.h> //Random # generation
+#include <time.h> //Random # generation
 
 //This enum class represents the available political parties, as well as None
 enum class Party {Party1, Party2, None};
@@ -19,14 +18,12 @@ std::string party_to_string(Party p);
 
 std::vector<Party> GetParties(); 
 
-//Helper fucntion helps to print votes from map format
 void PrintVote(std::string vote_name, std::map<std::string, int> vote);
 
 //This struct represents a Candidate, this holds their data, and Election will tell them when and where to campaign
 struct Candidate{
 	std::string name;
 	Party party;
-	//id starts at 0 and ascends by 1 for each newly registered candidate
 	int id;
 	
 	/**
@@ -46,12 +43,9 @@ class District{
 	
 		int get_id(){return id_;};
 		int get_area(){return area_;};
-	
 		std::map<Party, int> get_voters(){return voters_;};
 	
 		int CalculateTotalConstituents();
-	
-		friend std::ostream& operator<<(std::ostream& os, const District &d);
 		
 		Party MajorityParty();
 	
@@ -60,6 +54,8 @@ class District{
 		void ConvertConstituent(Party old_party, Party new_party);
 	
 		std::map<std::string, int> ConductVote(std::vector<Candidate>);
+	
+		friend std::ostream& operator<<(std::ostream& os, const District &d);
 	
 	private:
 		std::map<Party, int> voters_;

@@ -1,5 +1,8 @@
 #include "TextUI.h"
 
+/** 
+Brings the user to the program main menu and returns the users choice as a string
+*/
 std::string TextUI::MainMenu(){
 	std::string choice;
 	bool valid_choice = false;
@@ -16,6 +19,9 @@ std::string TextUI::MainMenu(){
 	return choice;
 }
 
+/** 
+Routes a users choice to the appropriate handler function
+*/
 void TextUI::RouteChoice(std::string choice){
 	if(choice == "d"){
 		this->DirectElection();
@@ -25,62 +31,77 @@ void TextUI::RouteChoice(std::string choice){
 	}
 }
 
+/** 
+Runs a direct election
+*/
 void TextUI::DirectElection(){
 	Election e(this->GetCandidatesToRegister());
-	std::cout << std::endl << *ElectoralMap::Instance(e.get_candidates());
+	std::cout << *ElectoralMap::Instance(e.get_candidates());
 	
 	unsigned int choice1;
-	unsigned int choice2;
 	while(choice1 != 0){
 		if(choice1 != 0){
 			std::cout << "Which candidate is campaigning (0 to stop)?";
 			std::cin >> choice1;
-			while(choice2 != 0){
-				std::cout << "Where is the candidate campaigning (0 to stop)?";
-				std::cin >> choice2;
-				if(choice2 != 0){
-					e.DirectCampaign(choice1, choice2);
-					std::cout << *ElectoralMap::Instance(e.get_candidates());
+			if(choice1 != 0){
+				unsigned int choice2 = 1;
+				while(choice2 != 0){
+					std::cout << "Where is the candidate campaigning (0 to stop)?";
+					std::cin >> choice2;
+					if(choice2 != 0){
+						e.DirectCampaign(choice1, choice2);
+						std::cout << *ElectoralMap::Instance(e.get_candidates());
+					}
 				}
 			}
 		}
 	}
-	std::cout << std::endl;
 	PrintVote("Full Results", e.GetResults());
 	ElectoralMap::Instance(e.get_candidates())->ReleaseInstance();
 }
 
+/** 
+Runs a representational election
+*/
 void TextUI::RepresentationalElection(){
 	RepresentativeElection e(this->GetCandidatesToRegister());
-	std::cout << std::endl << *ElectoralMap::Instance(e.get_candidates());
+	std::cout << *ElectoralMap::Instance(e.get_candidates());
 	
 	unsigned int choice1;
-	unsigned int choice2;
 	while(choice1 != 0){
 		if(choice1 != 0){
 			std::cout << "Which candidate is campaigning (0 to stop)?";
 			std::cin >> choice1;
-			while(choice2 != 0){
-				std::cout << "Where is the candidate campaigning (0 to stop)?";
-				std::cin >> choice2;
-				if(choice2 != 0){
-					e.DirectCampaign(choice1, choice2);
-					std::cout << *ElectoralMap::Instance(e.get_candidates());
-				}
+			if(choice1 != 0){
+				unsigned int choice2 = 1;
+					while(choice2 != 0){
+						std::cout << "Where is the candidate campaigning (0 to stop)?";
+						std::cin >> choice2;
+						if(choice2 != 0){
+							e.DirectCampaign(choice1, choice2);
+							std::cout << *ElectoralMap::Instance(e.get_candidates());
+						}
+					}
 			}
 		}
 	}
-	std::cout << std::endl;
 	PrintVote("Full Results", e.GetResults());
 	ElectoralMap::Instance(e.get_candidates())->ReleaseInstance();
 }
 
+/** 
+Prompts the user to register candidates, and stores user input as a
+vector of candidates
+*/
 std::vector<Candidate> TextUI::GetCandidatesToRegister(){
 	std::vector<Candidate> candidates;
 	int count = 1;
+	//for every party
 	for(Party p : GetParties()){
+		//except Party::None
 		if(p != Party::None){
 			std::string choice;
+			//either register a candidate or do not
 			while(choice != "n"){
 				std::cout << "Do you want to register a candidate for " << party_to_string(p) << " (y or n)?";
 				std::cin >> choice;
