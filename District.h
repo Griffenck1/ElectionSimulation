@@ -10,11 +10,11 @@
 #include <time.h> //Random # generation
 
 //This enum class represents the available political parties, as well as None
-enum class Party {Party1, Party2, None};
+enum class Party {Party1, Party2, Party3, None};
 
-Party string_to_party(std::string s);
+Party StringToParty(std::string s);
 
-std::string party_to_string(Party p);
+std::string PartyToString(Party p);
 
 std::vector<Party> GetParties(); 
 

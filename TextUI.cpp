@@ -103,7 +103,7 @@ std::vector<Candidate> TextUI::GetCandidatesToRegister(){
 			std::string choice;
 			//either register a candidate or do not
 			while(choice != "n"){
-				std::cout << "Do you want to register a candidate for " << party_to_string(p) << " (y or n)?";
+				std::cout << "Do you want to register a candidate for " << PartyToString(p) << " (y or n)?";
 				std::cin >> choice;
 				if(choice == "y"){
 					//created a second choice so if user names a candidate "n" it will not break out of the loop

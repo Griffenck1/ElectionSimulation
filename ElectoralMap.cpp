@@ -92,12 +92,12 @@ void ElectoralMap::Campaign(Candidate c, unsigned int district_id){
 	
 		if(random <= chance_success){
 			districts_[district_id - 1].ConvertConstituent(Party::None, c.party);
-			std::cout << "Congrats, you have converted someone from None to " << party_to_string(c.party) << std::endl << std::endl;
+			std::cout << "Congrats, you have converted someone from None to " << PartyToString(c.party) << std::endl << std::endl;
 		}
 		if(random <= chance_extra_success){
 			districts_[district_id - 1].ConvertConstituent(districts_[district_id - 1].MajorityParty(c.party), c.party);
-			std::cout << "Congrats, you have converted someone from " << party_to_string(districts_[district_id - 1].MajorityParty(c.party));
-			 std::cout << " to " << party_to_string(c.party) << std::endl << std::endl;
+			std::cout << "Congrats, you have converted someone from " << PartyToString(districts_[district_id - 1].MajorityParty(c.party));
+			 std::cout << " to " << PartyToString(c.party) << std::endl << std::endl;
 		}
 	}
 	else{

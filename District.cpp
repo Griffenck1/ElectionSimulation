@@ -25,26 +25,36 @@ void PrintVote(std::string vote_name, std::map<std::string, int> vote){
 	}
 }
 
-//converts strings to Party
-Party string_to_party(std::string s){
+/**
+Converts strings to Party
+*/
+Party StringToParty(std::string s){
 	if(s == "Party1"){
 		return Party::Party1;
 	}
 	else if(s == "Party2"){
 		return Party::Party2;
 	}
+	else if(s == "Party3"){
+		return Party::Party3;
+	}
 	else{
 		return Party::None;
 	}
 }
 
-//converts Party to strings
-std::string party_to_string(Party p){
+/**
+Converts Party to strings to help with printing
+*/
+std::string PartyToString(Party p){
 	if(p == Party::Party1){
 		return "Party1";
 	}
 	else if(p == Party::Party2){
 		return "Party2";
+	}
+	else if(p == Party::Party3){
+		return "Party3";
 	}
 	else{
 		return "None";
@@ -55,7 +65,7 @@ std::string party_to_string(Party p){
 Returns a vector of all parties in the enum class
 */
 std::vector<Party> GetParties(){
-	return {Party::Party1, Party::Party2, Party::None};
+	return {Party::Party1, Party::Party2, Party::Party3, Party::None};
 }
 
 /**
@@ -136,7 +146,10 @@ std::map<std::string, int> District::ConductVote(std::vector<Candidate> candidat
 	//Initialized map from candidates to how many votes they have won
 	std::map<std::string, int> vote_count;
 	//Initializes a map from Party to a vector of candidates in that party
-	std::map<Party, std::vector<Candidate>> party_members = {{Party::Party1, std::vector<Candidate>{}}, {Party::Party2, std::vector<Candidate>{}}, {Party::None, std::vector<Candidate>{}}};
+	std::map<Party, std::vector<Candidate>> party_members;
+	for(Party p : GetParties()){
+		party_members.insert(std::pair<Party,  std::vector<Candidate>>(p , std::vector<Candidate>{}));
+	}
 	for(Candidate c : candidates){
 		vote_count.insert(std::pair<std::string, int>(c.name, 0));
 		party_members.at(c.party).push_back(c);
@@ -178,7 +191,7 @@ std::ostream& operator<<(std::ostream& os, const District &d){
 	os << "square miles: " << d.area_ << std::endl;
 	
 	for(std::pair<Party, int> pair : d.voters_){
-		os << party_to_string(pair.first) << ": " << pair.second << std::endl;
+		os << PartyToString(pair.first) << ": " << pair.second << std::endl;
 	}
 	
 	os << std::endl;
